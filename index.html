@@ -48,6 +48,7 @@ h2 em,.hl em{font-style:italic;color:var(--accent)}
 header.top{position:fixed;top:0;left:0;right:0;z-index:60;display:flex;justify-content:flex-end;align-items:center;padding:22px var(--pad);font-size:14px;background:linear-gradient(#08100f 45%,rgba(8,16,15,0));padding-bottom:34px;pointer-events:none}
 header.top>*{pointer-events:auto}
 .menu{display:flex;gap:clamp(14px,2.4vw,34px)}
+.menu-btn{display:none}
 .menu a{color:var(--fg2);position:relative;transition:color .2s}
 .menu a::after{content:"";position:absolute;left:0;right:0;bottom:-3px;height:1px;background:var(--accent);transform:scaleX(0);transform-origin:left;transition:transform .35s var(--ease)}
 .menu a:hover,.menu a.on{color:var(--fg)}
@@ -197,7 +198,12 @@ footer{margin-top:clamp(80px,12vw,160px);padding:26px 0 34px;border-top:1px soli
   .flow{grid-template-columns:1fr 1fr}
 }
 @media(max-width:640px){
-  .menu a:not(.keep){display:none}
+  .menu-btn{display:inline-flex;align-items:center;gap:10px;position:relative;z-index:80;background:rgba(13,23,22,.72);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border:1px solid var(--line);color:var(--fg);padding:10px 20px;border-radius:999px;font-size:14px;cursor:pointer}
+  .menu{position:fixed;inset:0;z-index:70;flex-direction:column;justify-content:center;align-items:flex-start;gap:4px;padding:0 var(--pad);background:rgba(8,16,15,.97);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);opacity:0;visibility:hidden;transition:opacity .3s,visibility .3s}
+  .menu.open{opacity:1;visibility:visible}
+  .menu a{font-family:var(--serif);font-size:clamp(2.4rem,12vw,3.6rem);line-height:1.15;color:var(--fg);padding:4px 0}
+  .menu a::after{display:none}
+  .menu a.on{color:var(--accent-hi)}
   .hero .side{top:auto;bottom:calc(clamp(64px,10vh,110px) + 150px);transform:none;font-size:1.1rem}
   .hero .l{left:var(--pad)}
   .hero .hl{bottom:90px;font-size:clamp(2rem,9.5vw,3rem)}
@@ -222,7 +228,8 @@ footer{margin-top:clamp(80px,12vw,160px);padding:26px 0 34px;border-top:1px soli
 <canvas id="field" aria-hidden="true"></canvas>
 
 <header class="top">
-  <nav class="menu" aria-label="Primary">
+  <button class="menu-btn" id="menuBtn" type="button" aria-expanded="false" aria-controls="menu">Menu</button>
+  <nav class="menu" id="menu" aria-label="Primary">
     <a href="#results">Results</a>
     <a href="#work">Work</a>
     <a href="#creative">Creative</a>
@@ -703,6 +710,16 @@ if(!TOUCH){
     r.addEventListener('mouseleave',()=>{peek.classList.remove('on');run=false});
   });
 }
+
+/* ---------- mobile menu ---------- */
+(function(){
+  const btn=document.getElementById('menuBtn'),menu=document.getElementById('menu');
+  const set=o=>{menu.classList.toggle('open',o);btn.setAttribute('aria-expanded',o);btn.textContent=o?'Close':'Menu';document.body.style.overflow=o?'hidden':''};
+  btn.addEventListener('click',()=>set(!menu.classList.contains('open')));
+  menu.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>set(false)));
+  addEventListener('keydown',e=>{if(e.key==='Escape')set(false)});
+  addEventListener('resize',()=>{if(innerWidth>640)set(false)});
+})();
 
 /* ---------- copy email ---------- */
 (function(){
